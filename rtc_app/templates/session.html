@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Session - {{ session }}
+{% endblock %}
+
+{% block content %}
+  {{ user }}
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js" integrity="sha512-luMnTJZ7oEchNDZAtQhgjomP1eZefnl82ruTH/3Oj/Yu5qYtwL7+dVRccACS/Snp1lFXq188XFipHKYE75IaQQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+    const user = "{{ user }}";
+    const session = "{{ session }}";
+    let usersInSession = [];
+
+    const socket = io({autoConnect: false, "sync disconnect on unload": true});
+    socket.connect();
+
+    socket.emit("join", {user: user, room: session})
+
+    socket.on("hello", data => {
+        console.log(data);
+        console.log(`Hello, ${data.user}`);
+    })
+
+    socket.on("update_users_in_room", data => {
+        usersInSession = data;
+    })
+
+    socket.on("bye", data => {
+        console.log(`Bye, ${data.user}`);
+    })
+  </script>
+{% endblock %}

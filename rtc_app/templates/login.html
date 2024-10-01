@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+  <form action="/login" method="post">
+    <select name="option">
+        <option value="Alice">Alice</option>
+        <option value="Bob">Bob</option>
+        <option value="Caesar">Caesar</option>
+        <option value="Diana">Diana</option>
+    </select>
+    <!-- <input type="text" id="username" name="username" required placeholder="Username"/> -->
+    <button type="submit">Login</button>
+  </form>
+</div>
+{% endblock %}
