@@ -1,33 +1,43 @@
-from collections import namedtuple
-
 from flask import request
 from flask_socketio import emit, join_room
 
 from .extensions import socketio
-
-
-local_database = dict()
-Record = namedtuple('Record', 'user room')
-
-def users_in_room(room):
-    print([local_database[key].user for key in local_database if local_database[key].room == room])
-    return [local_database[key].user for key in local_database if local_database[key].room == room]
+from .peer import Peer
+from .RBCMLModel import RBCMLModel
+from .connector import Connector
 
 @socketio.on('connect')
 def handle_connect():
     print(f'Client connected - {request.sid}')
+    print(f'Client connected - {request.remote_user}')
 
 @socketio.on('disconnect')
 def handle_close():
     print(f'Client disconnected - {request.sid}')
-    (user, room) = local_database.pop(request.sid)
-    emit('bye', {'user': user}, to=room)
+
+connectors: dict[str, Connector] = dict()
 
 @socketio.on('join')
 def join(data):
     user = data['user']
-    room = data['room']
-    local_database[request.sid] = Record(user, room)
-    join_room(room)
-    emit('hello', {'user': user}, to=room, skip_sid=request.sid)
-    emit('update_users_in_room', users_in_room(room), to=room)
+    session = data['session']
+
+    peer = Peer(user, request.sid, get_user_role(user, session))
+    connections = get_session_connections(user, session)
+    
+    for connection in connections:
+        if connection not in connectors.keys():
+            model = RBCMLModel('')
+            connector = Connector(connection, model)
+            connector.add_peer(peer)
+            connectors[connection] = connector
+        else:
+            print(connectors[connection])
+            connectors[connection].add_peer(peer)
+
+
+def get_user_role(user: str, role: str) -> str:
+    return 'default-role'
+
+def get_session_connections(user: str, session: str) -> list[str]:
+    return ['c1', 'c2', 'c3']

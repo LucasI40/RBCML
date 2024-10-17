@@ -16,19 +16,23 @@
     const socket = io({autoConnect: false, "sync disconnect on unload": true});
     socket.connect();
 
-    socket.emit("join", {user: user, room: session})
+    socket.emit("join", {user: user, session: session});
 
-    socket.on("hello", data => {
-        console.log(data);
-        console.log(`Hello, ${data.user}`);
-    })
+    socket.on("setup_channel", data => {
+      console.log(data);
+    });
 
-    socket.on("update_users_in_room", data => {
-        usersInSession = data;
-    })
+    // socket.on("hello", data => {
+    //     console.log(data);
+    //     console.log(`Hello, ${data.user}`);
+    // })
 
-    socket.on("bye", data => {
-        console.log(`Bye, ${data.user}`);
-    })
+    // socket.on("update_users_in_room", data => {
+    //     usersInSession = data;
+    // })
+
+    // socket.on("bye", data => {
+    //     console.log(`Bye, ${data.user}`);
+    // })
   </script>
 {% endblock %}
