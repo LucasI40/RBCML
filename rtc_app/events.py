@@ -1,5 +1,5 @@
 from flask import request
-from flask_socketio import emit, join_room
+# from flask_socketio import emit, join_room
 
 from .extensions import socketio
 from .peer import Peer
@@ -40,4 +40,4 @@ def get_user_role(user: str, role: str) -> str:
     return 'default-role'
 
 def get_session_connections(user: str, session: str) -> list[str]:
-    return ['c1', 'c2', 'c3']
+    return ['c1']

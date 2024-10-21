@@ -5,7 +5,17 @@
 {% endblock %}
 
 {% block content %}
-  {{ user }}
+  <div class="container">
+    <div class="slice slice-1">
+      {{ user }}
+    </div>
+    <div class="slice slice-2">
+      Videos
+    </div>
+    <div class="slice slice-3">
+      String/Blob
+    </div>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js" integrity="sha512-luMnTJZ7oEchNDZAtQhgjomP1eZefnl82ruTH/3Oj/Yu5qYtwL7+dVRccACS/Snp1lFXq188XFipHKYE75IaQQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
@@ -21,18 +31,5 @@
     socket.on("setup_channel", data => {
       console.log(data);
     });
-
-    // socket.on("hello", data => {
-    //     console.log(data);
-    //     console.log(`Hello, ${data.user}`);
-    // })
-
-    // socket.on("update_users_in_room", data => {
-    //     usersInSession = data;
-    // })
-
-    // socket.on("bye", data => {
-    //     console.log(`Bye, ${data.user}`);
-    // })
   </script>
 {% endblock %}

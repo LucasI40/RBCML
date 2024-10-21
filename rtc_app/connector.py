@@ -13,6 +13,9 @@ class Connector:
         return f"Connector['{self.connection}']: {self.connected}"
 
     def add_peer(self, peer: Peer):
+        # To avoid duplicate peers, remove any other occurrence of peer        
+        self.connected = [_peer for _peer in self.connected if _peer.user != peer.user]
+        
         # Connect the give peer with the already 'connected' ones
         for _peer in self.connected:
             self.do_connection(peer, _peer)
