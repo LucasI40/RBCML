@@ -1,3 +1,5 @@
+import random
+
 from flask import request
 # from flask_socketio import emit, join_room
 
@@ -9,21 +11,28 @@ from .connector import Connector
 @socketio.on('connect')
 def handle_connect():
     print(f'Client connected - {request.sid}')
-    print(f'Client connected - {request.remote_user}')
 
 @socketio.on('disconnect')
 def handle_close():
     print(f'Client disconnected - {request.sid}')
+    connections = user_connections[request.sid]
+    for connection in connections:
+        connectors[connection].remove_peer(request.sid)
 
 connectors: dict[str, Connector] = dict()
+user_connections: dict[str, list[str]] = dict()
 
 @socketio.on('join')
 def join(data):
-    user = data['user']
-    session = data['session']
+    user: str = data['user']
+    session: str = data['session']
 
     peer = Peer(user, request.sid, get_user_role(user, session))
+    print(f"Creating {peer}")
     connections = get_session_connections(user, session)
+    user_connections[request.sid] = connections
+
+    socketio.emit('setup_connections', connections, to=peer.sid)
     
     for connection in connections:
         if connection not in connectors.keys():
@@ -32,12 +41,19 @@ def join(data):
             connector.add_peer(peer)
             connectors[connection] = connector
         else:
-            print(connectors[connection])
             connectors[connection].add_peer(peer)
 
 
-def get_user_role(user: str, role: str) -> str:
-    return 'default-role'
+memoizator = dict()
+def get_user_role(user: str, session: str) -> str:
+    if user in memoizator:
+        return memoizator[user]
+    
+    roles = ["Médico", "Enfermeiro", "Paciente", "Acompanhante", "Técnico"]
+    memoizator[user] = roles[random.randint(0,4)]
+    return memoizator[user]
 
 def get_session_connections(user: str, session: str) -> list[str]:
-    return ['c1']
+    connections = ["Conversa Particular", "Triagem", "Exame", "Consulta", "Diagnóstico"]
+    n = random.randint(2, 4)
+    return random.sample(connections, n)

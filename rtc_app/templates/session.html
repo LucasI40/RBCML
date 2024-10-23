@@ -6,13 +6,31 @@
 
 {% block content %}
   <div class="container">
-    <div class="slice slice-1">
-      {{ user }}
+    <div class="section panel" id="panel">
+      <span id="session-name">{{ session }}</span>
+      <span id="user-name">{{ user }}</span>
+      <span id="user-role">{{ role }}</span>
+      
+      <div id="connections" style="display: none;">
+        <h3>Conexões</h3>
+        <!-- <span class="connection selected" id="connection-C1" onclick="changeConnection('connection-C1')">C1</span>
+        <span class="connection" id="connection-C2" onclick="changeConnection('connection-C1')">C2</span> -->
+      </div>
+      <hr>
+      <div id="users">
+        <h3>Usuários</h3>
+        <div class="users" id="users-list">
+          <!-- <span class="user-name">Bob</span>
+          <span class="user-role">Médico</span>
+          <span class="user-name">Caesar</span>
+          <span class="user-role">Enfermeiro</span> -->
+        </div>
+      </div>
     </div>
-    <div class="slice slice-2">
+    <div class="section videos" id="videos">
       Videos
     </div>
-    <div class="slice slice-3">
+    <div class="section chat" id="chat">
       String/Blob
     </div>
   </div>
@@ -21,15 +39,16 @@
   <script>
     const user = "{{ user }}";
     const session = "{{ session }}";
-    let usersInSession = [];
 
     const socket = io({autoConnect: false, "sync disconnect on unload": true});
     socket.connect();
 
     socket.emit("join", {user: user, session: session});
 
-    socket.on("setup_channel", data => {
-      console.log(data);
-    });
+    socket.on("setup_connections", data => { setupConnections(data); })
+
+    
   </script>
+  <script src="{{ url_for('static', filename='scripts/connections.js') }}"></script>
+  <script src="{{ url_for('static', filename='scripts/channel.js') }}"></script>
 {% endblock %}

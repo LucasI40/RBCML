@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, redirect, request
 
+from .events import get_user_role
+
 
 main = Blueprint('main', __name__)
 
@@ -26,4 +28,5 @@ def view_user(user):
 
 @main.route('/user/<user>/session/<session>')
 def view_session(user, session):
-    return render_template('session.html', user=user, session=session)
+    role = get_user_role(user, session)
+    return render_template('session.html', user=user, session=session, role=role)

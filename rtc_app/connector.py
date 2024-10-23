@@ -21,6 +21,31 @@ class Connector:
             self.do_connection(peer, _peer)
         
         self.connected.append(peer)
+
+    def remove_peer(self, user_sid: str):
+        # Find a peer in the connected list and remove it from the list.
+        # Also call a function to release the connection of the removed
+        # peer with the other
+        for peer in self.connected:
+            if peer.sid == user_sid:
+                self.connected.remove(peer)
+                self.release_connection(peer)
+                return
+
+    def release_connection(self, peer: Peer):
+        # Emit a socket event for all other peer in connection notifying
+        # that the peer have leave the connection
+        for _peer in self.connected:
+            socketio.emit(
+                'release_channel',
+                {
+                    'connection': self.connection,
+                    'other_name': peer.user,
+                    'other_role': peer.role,
+                    'other_id': peer.sid,
+                },
+                to=_peer.sid
+            )
     
     def do_connection(self, p1: Peer, p2: Peer):
         # Connect two peers based on the model of this Connector.
@@ -42,6 +67,7 @@ class Connector:
                 'other_name': p2.user,
                 'other_role': p2.role,
                 'other_capability': p2_capability,
+                'other_id': p2.sid,
                 'signaling_policy': 'proactive'
             },
             to=p1.sid
@@ -58,6 +84,7 @@ class Connector:
                 'other_name': p1.user,
                 'other_role': p1.role,
                 'other_capability': p1_capability,
+                'other_id': p1.sid,
                 'signaling_policy': 'reactive'
             },
             to=p2.sid

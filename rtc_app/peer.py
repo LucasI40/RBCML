@@ -3,6 +3,6 @@ class Peer:
         self.user = user
         self.sid = sid
         self.role = role
-    
+
     def __repr__(self):
         return f"{self.user}:{self.role}"
