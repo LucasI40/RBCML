@@ -1,19 +1,23 @@
 let selectedConnection = "";
-window.usersInConnection = {};
+window.usersInConnection = {}; // connectionName -> [user]
+window.usersMessages = {}; // connectionName -> [message]
+window.listeners = {}; // connectionName -> [Channel]
 
 const setupConnections = (data) => {
-  setupUsersInConnection(data);
+  initUsersInConnection(data);
+  initUsersMessages(data);
+  initListeners(data);
   const connectionsElem = document.getElementById("connections");
   connectionsElem.style.display = "block";
 
-  data.forEach(connectionName => {
+  data.forEach((connectionName) => {
     const elem = document.createElement("span");
     elem.classList.add("connection");
     elem.id = "connection-" + connectionName;
     elem.textContent = connectionName;
-    elem.onclick = () => { 
-        changeConnection("connection-" + connectionName);
-    }
+    elem.onclick = () => {
+      changeConnection("connection-" + connectionName);
+    };
 
     connectionsElem.appendChild(elem);
   });
@@ -25,7 +29,7 @@ const setupConnections = (data) => {
   }
 };
 
-const changeConnection = newSelectedConnection => {
+const changeConnection = (newSelectedConnection) => {
   if (selectedConnection === newSelectedConnection) {
     return;
   }
@@ -35,28 +39,88 @@ const changeConnection = newSelectedConnection => {
   document.getElementById(selectedConnection).classList.toggle("selected");
 
   window.updateUsersUI();
-}
+  window.updateMessagesUI();
+};
 
-const setupUsersInConnection = data => {
-  data.forEach(connectionName => {
-    usersInConnection["connection-" + connectionName] = [];
-  })
-}
+const send = () => {
+  const inputElem = document.getElementById("input-area");
+  const msg = inputElem.value;
+  inputElem.value = "";
+
+  window.usersMessages[selectedConnection].push({
+    sender: user,
+    message: msg,
+  });
+
+  window.listeners[selectedConnection].forEach((channel) => {
+    channel.send(msg);
+  });
+
+  window.updateMessagesUI();
+};
+
+const initUsersInConnection = (data) => {
+  data.forEach((connectionName) => {
+    window.usersInConnection["connection-" + connectionName] = [];
+  });
+};
+
+const initUsersMessages = (data) => {
+  data.forEach((connectionName) => {
+    window.usersMessages["connection-" + connectionName] = [];
+  });
+
+  // window.usersMessages["connection-Exame"] = [
+  //   { sender: "Caesar", message: "Hello!" },
+  // ];
+  // window.usersMessages["connection-Consulta"] = [
+  //   { sender: "Alice", message: "Hello! How are you?" },
+  //   { sender: "Bob", message: "I'm fine!" },
+  // ];
+};
+
+const initListeners = (data) => {
+  data.forEach((connectionName) => {
+    window.listeners["connection-" + connectionName] = [];
+  });
+};
 
 window.updateUsersUI = () => {
   const usersElem = document.getElementById("users-list");
   usersElem.replaceChildren();
 
-  window.usersInConnection[selectedConnection].forEach(user => {
+  window.usersInConnection[selectedConnection].forEach((user) => {
     const nameElem = document.createElement("span");
     nameElem.classList.add("user-name");
-    nameElem.textContent = user["userName"]
+    nameElem.textContent = user["userName"];
 
     const roleElem = document.createElement("span");
     roleElem.classList.add("user-role");
-    roleElem.textContent = user["userRole"]
+    roleElem.textContent = user["userRole"];
 
     usersElem.appendChild(nameElem);
     usersElem.appendChild(roleElem);
   });
-}
+};
+
+window.updateMessagesUI = () => {
+  const messagesElem = document.getElementById("messages");
+  messagesElem.replaceChildren();
+
+  window.usersMessages[selectedConnection].forEach((msg) => {
+    const divElem = document.createElement("div");
+    divElem.classList.add("message");
+
+    const senderElem = document.createElement("span");
+    senderElem.classList.add("sender");
+    senderElem.textContent = msg["sender"];
+
+    const messageElem = document.createElement("span");
+    messageElem.textContent = msg["message"];
+
+    divElem.appendChild(senderElem);
+    divElem.appendChild(messageElem);
+
+    messagesElem.appendChild(divElem);
+  });
+};

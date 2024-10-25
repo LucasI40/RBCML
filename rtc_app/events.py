@@ -43,11 +43,21 @@ def join(data):
         else:
             connectors[connection].add_peer(peer)
 
+@socketio.on('SDP')
+def sdp(data):
+    print(data)
+
+    channel_name = data["channelName"]
+    to = data['to']
+    sdp = data['sdp']
+    socketio.emit('SDP', {"sdp": sdp, 'channel_name': channel_name}, to=to)
 
 memoizator = dict()
 def get_user_role(user: str, session: str) -> str:
     if user in memoizator:
         return memoizator[user]
+    
+    return {"Alice": "Enfermeiro", "Bob": "Paciente", "Caesar": "Acompanhante", "Diana": "Técnico"}[user]
     
     roles = ["Médico", "Enfermeiro", "Paciente", "Acompanhante", "Técnico"]
     memoizator[user] = roles[random.randint(0,4)]
@@ -55,5 +65,6 @@ def get_user_role(user: str, session: str) -> str:
 
 def get_session_connections(user: str, session: str) -> list[str]:
     connections = ["Conversa Particular", "Triagem", "Exame", "Consulta", "Diagnóstico"]
+    return [connections[0]]
     n = random.randint(2, 4)
     return random.sample(connections, n)
