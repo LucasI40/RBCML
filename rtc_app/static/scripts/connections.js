@@ -26,6 +26,20 @@ class UserCapabilities {
   }
 }
 
+class channelCapability {
+  constructor(
+    audio,
+    video,
+    string,
+    blob
+  ) {
+    this.audio = audio;
+    this.video = video;
+    this.string = string;
+    this.blob = blob;
+  }
+}
+
 const setupConnections = (data) => {
   initUsersInConnection(data);
   initUsersMessages(data);

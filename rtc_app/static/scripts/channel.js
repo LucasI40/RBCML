@@ -28,11 +28,12 @@ class Channel {
     this.pc = new RTCPeerConnection(configuration);
 
     // Does the connection have string capability?
-    const hasStringChannel = channelCapability[2];
+    const hasStringChannel = channelCapability.string;
     // Does the peers have matching capability to establish  a channel?
     const stringMatchingCapability =
-      (selfCapability[4] && otherCapability[5]) ||
-      (selfCapability[5] && otherCapability[4]);
+      (selfCapability.sendString && otherCapability.recvString) ||
+      (selfCapability.recvString && otherCapability.sendString);
+    console.log(stringMatchingCapability);
     this.hasStringChannel = hasStringChannel && stringMatchingCapability;
 
     this.establishStringChannel(policy);
@@ -50,8 +51,8 @@ class Channel {
     this.dataChannel = this.pc.createDataChannel("Channel");
 
     this.dataChannel.onmessage = (msg) => {
-      const selfCandRecv = this.selfCapability[5];
-      const otherCandSend = this.otherCapability[4];
+      const selfCandRecv = this.selfCapability.recvString;
+      const otherCandSend = this.otherCapability.sendString;
 
       if (selfCandRecv && otherCandSend) {
         window.usersMessages[this.connectionName].push({
@@ -98,8 +99,8 @@ class Channel {
       this.dataChannel = e.channel;
       this.pc.dataChannel = e.channel;
       this.pc.dataChannel.onmessage = (msg) => {
-        const selfCandRecv = this.selfCapability[5];
-        const otherCandSend = this.otherCapability[4];
+        const selfCandRecv = this.selfCapability.recvString;
+        const otherCandSend = this.otherCapability.sendString;
 
         if (selfCandRecv && otherCandSend) {
           window.usersMessages[this.connectionName].push({
@@ -129,8 +130,8 @@ class Channel {
   }
 
   send(msg) {
-    const selfCanSend = this.selfCapability[4];
-    const otherCanRecv = this.otherCapability[5];
+    const selfCanSend = this.selfCapability.sendString;
+    const otherCanRecv = this.otherCapability.recvString;
 
     if (selfCanSend && otherCanRecv) {
       this.dataChannel.send(msg);
@@ -162,18 +163,17 @@ socket.on("setup_channel", (data) => {
   });
 
   let channelName = data["connection"];
-  // Proactive peer come first in channel name, making both peers agree on this
+  // Proactive peer come first in channel name, making both peers agree on channelName
   if (data["signaling_policy"] === "proactive") {
-    channelName += ":" + data["peer_name"] + ":" + data["other_name"];
+    channelName += ":" + user + ":" + data["other_name"];
   } else {
-    channelName += ":" + data["other_name"] + ":" + data["peer_name"];
+    channelName += ":" + data["other_name"] + ":" + user;
   }
-  // const channelName = data["connection"] + ":" + data["peer_name"] + ":" + data["other_name"];
   const channel = new Channel(
     channelName,
-    data["channel_capability"],
-    data["peer_capability"],
-    data["other_capability"],
+    new channelCapability(...data["channel_capability"]),
+    window.userConnectionCapabilities[connection],
+    new UserCapabilities(...data["other_capability"]),
     data["other_name"],
     data["other_id"],
     data["signaling_policy"]

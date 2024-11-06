@@ -61,9 +61,6 @@ class Connector:
             {
                 'connection': self.connection,
                 'channel_capability': channel_capability,
-                'peer_name': p1.user,
-                'peer_role': p1.role,
-                'peer_capability': p1_capability,
                 'other_name': p2.user,
                 'other_role': p2.role,
                 'other_capability': p2_capability,
@@ -78,9 +75,6 @@ class Connector:
             {
                 'connection': self.connection,
                 'channel_capability': channel_capability,
-                'peer_name': p2.user,
-                'peer_role': p2.role,
-                'peer_capability': p2_capability,
                 'other_name': p1.user,
                 'other_role': p1.role,
                 'other_capability': p1_capability,
