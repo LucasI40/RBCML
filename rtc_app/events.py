@@ -43,6 +43,15 @@ def join(data):
         else:
             connectors[connection].add_peer(peer)
 
+@socketio.on('send_offer')
+def send_offer(data):
+    print(data)
+
+    channel_name = data["channelName"]
+    to = data['to']
+    offer_sdp = data['offerSdp']
+    socketio.emit('create_answer', {"offer_sdp": offer_sdp, 'channel_name': channel_name}, to=to)
+
 @socketio.on('SDP')
 def sdp(data):
     print(data)

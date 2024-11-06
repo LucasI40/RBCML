@@ -1,4 +1,4 @@
-const channels = {};   // channelName -> Channel
+const channels = {}; // channelName -> Channel
 
 class Channel {
   constructor(
@@ -56,7 +56,7 @@ class Channel {
       if (selfCandRecv && otherCandSend) {
         window.usersMessages[this.connectionName].push({
           sender: this.otherName,
-          message: msg.data
+          message: msg.data,
         });
 
         window.updateMessagesUI();
@@ -73,22 +73,25 @@ class Channel {
         to: this.otherSocketId,
         sdp: this.pc.localDescription,
       });
-      console.log(this.pc.localDescription);
     };
 
     this.pc.createOffer().then((offer) => {
       this.pc.setLocalDescription(offer);
+      socket.emit("send_offer", {
+        channelName: this.channelName,
+        to: this.otherSocketId,
+        offerSdp: offer,
+      });
     });
   }
 
-  createAnswer() {
+  createAnswer(offer) {
     this.pc.onicecandidate = (e) => {
       socket.emit("SDP", {
         channelName: this.channelName,
         to: this.otherSocketId,
         sdp: this.pc.localDescription,
       });
-      console.log(this.pc.localDescription);
     };
 
     this.pc.ondatachannel = (e) => {
@@ -101,7 +104,7 @@ class Channel {
         if (selfCandRecv && otherCandSend) {
           window.usersMessages[this.connectionName].push({
             sender: this.otherName,
-            message: msg.data
+            message: msg.data,
           });
 
           window.updateMessagesUI();
@@ -112,13 +115,17 @@ class Channel {
       };
     };
 
+    this.pc.setRemoteDescription(offer);
+
     this.pc.createAnswer().then((answer) => {
       this.pc.setLocalDescription(answer);
     });
   }
 
   setRemoteDescription(description) {
-    this.pc.setRemoteDescription(description);
+    this.pc.setRemoteDescription(description).catch((e) => {
+      // TODO?: handle this error
+    });
   }
 
   send(msg) {
@@ -131,18 +138,16 @@ class Channel {
   }
 }
 
+socket.on("create_answer", (data) => {
+  offerSdp = data["offer_sdp"];
+  channelName = data["channel_name"];
+  channels[channelName].createAnswer(offerSdp);
+});
+
 socket.on("SDP", (data) => {
   sdp = data["sdp"];
   channelName = data["channel_name"];
-
-  if (sdp.type == "offer") {
-    channels[channelName].setRemoteDescription(sdp);
-    channels[channelName].createAnswer();
-  } else {
-    // if (sdp.type == "answer")
-    channels[channelName].setRemoteDescription(sdp);
-  }
-  console.log(data);
+  channels[channelName].setRemoteDescription(sdp);
 });
 
 socket.on("setup_channel", (data) => {
@@ -179,8 +184,6 @@ socket.on("setup_channel", (data) => {
 });
 
 socket.on("release_channel", (data) => {
-  // console.log(data);
-
   // Update the userInConnections object
   connection = "connection-" + data["connection"];
   window.usersInConnection[connection] = window.usersInConnection[
