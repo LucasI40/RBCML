@@ -63,6 +63,7 @@
     socket.emit("join", {user: user, session: session});
 
     socket.on("setup_connections", data => { setupConnections(data); })
+    socket.on("setup_user_capabilities", data => { setupUserCapabilities(data); })
 
     
   </script>

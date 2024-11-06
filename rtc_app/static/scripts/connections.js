@@ -2,6 +2,29 @@ let selectedConnection = "";
 window.usersInConnection = {}; // connectionName -> [user]
 window.usersMessages = {}; // connectionName -> [message]
 window.listeners = {}; // connectionName -> [Channel]
+window.userConnectionCapabilities = {}; // connectionName -> UserCapabilities
+
+class UserCapabilities {
+  constructor(
+    sendVideo,
+    recvVideo,
+    sendAudio,
+    recvAudio,
+    sendString,
+    recvString,
+    sendBlob,
+    recvBlob
+  ) {
+    this.sendVideo = sendVideo;
+    this.recvVideo = recvVideo;
+    this.sendAudio = sendAudio;
+    this.recvAudio = recvAudio;
+    this.sendString = sendString;
+    this.recvString = recvString;
+    this.sendBlob = sendBlob;
+    this.recvBlob = recvBlob;
+  }
+}
 
 const setupConnections = (data) => {
   initUsersInConnection(data);
@@ -16,7 +39,7 @@ const setupConnections = (data) => {
     elem.id = "connection-" + connectionName;
     elem.textContent = connectionName;
     elem.onclick = () => {
-      changeConnection("connection-" + connectionName);
+      changeConnection(connectionName);
     };
 
     connectionsElem.appendChild(elem);
@@ -25,18 +48,26 @@ const setupConnections = (data) => {
   if (data.length > 0) {
     const firstConnection = document.getElementById("connection-" + data[0]);
     firstConnection.classList.add("selected");
-    selectedConnection = "connection-" + data[0];
+    selectedConnection = data[0];
   }
 };
+
+const setupUserCapabilities = (data) => {
+  Object.keys(data).forEach((connectionName) => {
+    window.userConnectionCapabilities[connectionName] = new UserCapabilities(...data[connectionName]);
+  });
+
+  window.updateMessagesUI();
+}
 
 const changeConnection = (newSelectedConnection) => {
   if (selectedConnection === newSelectedConnection) {
     return;
   }
 
-  document.getElementById(selectedConnection).classList.toggle("selected");
+  document.getElementById("connection-" + selectedConnection).classList.toggle("selected");
   selectedConnection = newSelectedConnection;
-  document.getElementById(selectedConnection).classList.toggle("selected");
+  document.getElementById("connection-" + selectedConnection).classList.toggle("selected");
 
   window.updateUsersUI();
   window.updateMessagesUI();
@@ -61,13 +92,13 @@ const send = () => {
 
 const initUsersInConnection = (data) => {
   data.forEach((connectionName) => {
-    window.usersInConnection["connection-" + connectionName] = [];
+    window.usersInConnection[connectionName] = [];
   });
 };
 
 const initUsersMessages = (data) => {
   data.forEach((connectionName) => {
-    window.usersMessages["connection-" + connectionName] = [];
+    window.usersMessages[connectionName] = [];
   });
 
   // window.usersMessages["connection-Exame"] = [
@@ -81,7 +112,7 @@ const initUsersMessages = (data) => {
 
 const initListeners = (data) => {
   data.forEach((connectionName) => {
-    window.listeners["connection-" + connectionName] = [];
+    window.listeners[connectionName] = [];
   });
 };
 
@@ -104,6 +135,21 @@ window.updateUsersUI = () => {
 };
 
 window.updateMessagesUI = () => {
+  // Clear the input area
+  const buttonElem = document.getElementById("send-button");
+  const inputElem = document.getElementById("input-area");
+  inputElem.value = "";
+
+  // Handle UI affect by user capabilities
+  if (window.userConnectionCapabilities[selectedConnection].sendString) {
+    inputElem.disabled = false;
+    buttonElem.disabled = false;
+  } else {
+    inputElem.disabled = true;
+    buttonElem.disabled = true;
+  }
+
+  // Update the messages
   const messagesElem = document.getElementById("messages");
   messagesElem.replaceChildren();
 

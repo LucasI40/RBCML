@@ -5,7 +5,7 @@ from flask import request
 
 from .extensions import socketio
 from .peer import Peer
-from .RBCMLModel import RBCMLModel
+from .RBCMLModel import get_model
 from .connector import Connector
 
 @socketio.on('connect')
@@ -29,14 +29,21 @@ def join(data):
 
     peer = Peer(user, request.sid, get_user_role(user, session))
     print(f"Creating {peer}")
-    connections = get_session_connections(user, session)
+
+    model = get_model(session)
+    role = get_user_role(user, session)
+    connections = model.get_connections(role)
+
     user_connections[request.sid] = connections
 
     socketio.emit('setup_connections', connections, to=peer.sid)
+    capabilities = {}
+    for connection in connections:
+        capabilities[connection] = model.role_capability(role, connection)
+    socketio.emit('setup_user_capabilities', capabilities, to=peer.sid)
     
     for connection in connections:
         if connection not in connectors.keys():
-            model = RBCMLModel('')
             connector = Connector(connection, model)
             connector.add_peer(peer)
             connectors[connection] = connector
@@ -66,14 +73,8 @@ def get_user_role(user: str, session: str) -> str:
     if user in memoizator:
         return memoizator[user]
     
-    return {"Alice": "Enfermeiro", "Bob": "Paciente", "Caesar": "Acompanhante", "Diana": "Técnico"}[user]
+    # return {"Alice": "Enfermeiro", "Bob": "Paciente", "Caesar": "Acompanhante", "Diana": "Técnico"}[user]
     
     roles = ["Médico", "Enfermeiro", "Paciente", "Acompanhante", "Técnico"]
     memoizator[user] = roles[random.randint(0,4)]
     return memoizator[user]
-
-def get_session_connections(user: str, session: str) -> list[str]:
-    connections = ["Conversa Particular", "Triagem", "Exame", "Consulta", "Diagnóstico"]
-    return [connections[0]]
-    n = random.randint(2, 4)
-    return random.sample(connections, n)

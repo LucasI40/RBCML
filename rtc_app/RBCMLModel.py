@@ -1,3 +1,5 @@
+import random
+
 from .capability import ChannelCapability, RoleCapability
 
 class RBCMLModel:
@@ -27,3 +29,12 @@ class RBCMLModel:
 
         # Return the role capability for the given connetion in the model
         return RoleCapability(False, False, False, False, True, True, False, False)
+    
+    def get_connections(self, role: str) -> list[str]:
+        connections = ["Conversa Particular", "Triagem", "Exame", "Consulta", "Diagnóstico"]
+        # return [connections[0]]
+        n = random.randint(2, 4)
+        return random.sample(connections, n)
+
+def get_model(session: str) -> RBCMLModel:
+    return RBCMLModel("empty_model")

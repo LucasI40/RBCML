@@ -81,3 +81,11 @@
     color: var(--gray-dark);
     cursor: pointer;
 }
+
+.chat .input-area button:disabled {
+    background-color: var(--gray-light);
+    color: var(--gray-dark);
+    border: 1px solid var(--gray-dark);
+    cursor: not-allowed;
+    opacity: 0.6;
+}

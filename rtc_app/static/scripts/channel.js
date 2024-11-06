@@ -11,7 +11,7 @@ class Channel {
     policy
   ) {
     this.channelName = channelName;
-    this.connectionName = "connection-" + channelName.split(":")[0];
+    this.connectionName = channelName.split(":")[0];
     this.channelCapability = channelCapability;
     this.selfCapability = selfCapability;
     this.otherCapability = otherCapability;
@@ -154,7 +154,7 @@ socket.on("setup_channel", (data) => {
   console.log(data);
 
   // Update the userInConnections object
-  connection = "connection-" + data["connection"];
+  connection = data["connection"];
   window.usersInConnection[connection].push({
     userName: data["other_name"],
     userRole: data["other_role"],
@@ -185,7 +185,7 @@ socket.on("setup_channel", (data) => {
 
 socket.on("release_channel", (data) => {
   // Update the userInConnections object
-  connection = "connection-" + data["connection"];
+  connection = data["connection"];
   window.usersInConnection[connection] = window.usersInConnection[
     connection
   ].filter((user) => {
