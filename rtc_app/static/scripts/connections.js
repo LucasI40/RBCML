@@ -1,6 +1,7 @@
 let selectedConnection = "";
 window.usersInConnection = {}; // connectionName -> [user]
-window.usersMessages = {}; // connectionName -> [message]
+window.usersMessages = {}; // connectionName -> [Message]
+window.usersMedias = {}; // connectionName -> sender -> Media
 window.listeners = {}; // connectionName -> [Channel]
 window.userConnectionCapabilities = {}; // connectionName -> UserCapabilities
 
@@ -27,12 +28,7 @@ class UserCapabilities {
 }
 
 class channelCapability {
-  constructor(
-    audio,
-    video,
-    string,
-    blob
-  ) {
+  constructor(audio, video, string, blob) {
     this.audio = audio;
     this.video = video;
     this.string = string;
@@ -40,9 +36,24 @@ class channelCapability {
   }
 }
 
+class Message {
+  constructor(sender, message) {
+    this.sender = sender;
+    this.message = message;
+  }
+}
+
+class Media {
+  constructor(audioStream, videoStream) {
+    this.audioStream = audioStream;
+    this.videoStream = videoStream;
+  }
+}
+
 const setupConnections = (data) => {
   initUsersInConnection(data);
   initUsersMessages(data);
+  initUsersMedias(data);
   initListeners(data);
   const connectionsElem = document.getElementById("connections");
   connectionsElem.style.display = "block";
@@ -68,22 +79,29 @@ const setupConnections = (data) => {
 
 const setupUserCapabilities = (data) => {
   Object.keys(data).forEach((connectionName) => {
-    window.userConnectionCapabilities[connectionName] = new UserCapabilities(...data[connectionName]);
+    window.userConnectionCapabilities[connectionName] = new UserCapabilities(
+      ...data[connectionName]
+    );
   });
 
   window.updateMessagesUI();
-}
+};
 
 const changeConnection = (newSelectedConnection) => {
   if (selectedConnection === newSelectedConnection) {
     return;
   }
 
-  document.getElementById("connection-" + selectedConnection).classList.toggle("selected");
+  document
+    .getElementById("connection-" + selectedConnection)
+    .classList.toggle("selected");
   selectedConnection = newSelectedConnection;
-  document.getElementById("connection-" + selectedConnection).classList.toggle("selected");
+  document
+    .getElementById("connection-" + selectedConnection)
+    .classList.toggle("selected");
 
   window.updateUsersUI();
+  window.updateVideosUI();
   window.updateMessagesUI();
 };
 
@@ -114,14 +132,12 @@ const initUsersMessages = (data) => {
   data.forEach((connectionName) => {
     window.usersMessages[connectionName] = [];
   });
+};
 
-  // window.usersMessages["connection-Exame"] = [
-  //   { sender: "Caesar", message: "Hello!" },
-  // ];
-  // window.usersMessages["connection-Consulta"] = [
-  //   { sender: "Alice", message: "Hello! How are you?" },
-  //   { sender: "Bob", message: "I'm fine!" },
-  // ];
+const initUsersMedias = (data) => {
+  data.forEach((connectionName) => {
+    window.usersMedias[connectionName] = {};
+  });
 };
 
 const initListeners = (data) => {
@@ -184,3 +200,38 @@ window.updateMessagesUI = () => {
     messagesElem.appendChild(divElem);
   });
 };
+
+window.updateVideosUI = () => {
+  const videosElem = document.getElementById("videos");
+  videosElem.replaceChildren();
+
+  console.log(window.usersMedias[selectedConnection]);
+
+  Object.keys(window.usersMedias[selectedConnection]).forEach((sender) => {
+    const divElem = document.createElement("div");
+    divElem.classList.add("audio-video-container");
+
+    const videoElem = document.createElement("video");
+    videoElem.classList.add("video");
+    videoElem.autoplay = true;
+    videoElem.playsInline = true;
+    videoElem.controls = false;
+  
+    console.log("imhere");
+    console.log(window.usersMedias[selectedConnection][sender].videoStream);
+    videoElem.srcObject = window.usersMedias[selectedConnection][sender].videoStream;
+
+    const audioElem = document.createElement("audio");
+    audioElem.classList.add("audio");
+
+    const nameElem = document.createElement("h3");
+    nameElem.classList.add("peer-name");
+    nameElem.innerText = sender;
+
+    divElem.appendChild(videoElem);
+    divElem.appendChild(audioElem);
+    divElem.appendChild(nameElem);
+
+    videosElem.appendChild(divElem);
+  });
+}

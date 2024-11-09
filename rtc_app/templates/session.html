@@ -10,6 +10,16 @@
       <span id="session-name">{{ session }}</span>
       <span id="user-name">{{ user }}</span>
       <span id="user-role">{{ role }}</span>
+
+      <div class="audio-video-container">
+        <video class="video" id="user-video" autoplay playsinline></video>
+        <audio class="audio" id="user-audio" autoplay></audio>
+        <div class="audio-video-ui">
+          <button class="audio-button" id="user-audio-ui" onclick="toggleUserPhone()"></button>
+          <button class="video-button" id="user-video-ui" onclick="toggleUserCamera()"></button>
+        </div>
+      </div>
+
       
       <div id="connections" style="display: none;">
         <h3>Conexões</h3>
@@ -29,7 +39,11 @@
     </div>
 
     <div class="section videos" id="videos">
-      Videos
+      <!-- <div class="audio-video-container">
+        <video class="video" id="other-video" autoplay playsinline></video>
+        <audio class="audio" autoplay></audio>
+        <h3 class="peer-name">Alice</h3>
+      </div> -->
     </div>
 
     <div class="section chat" id="chat">
@@ -47,7 +61,7 @@
   
       <div class="input-area">
         <textarea placeholder="Insira sua mensagem..." id="input-area"></textarea>
-        <button id="send-button" onclick="send()">Enviar</button>
+        <button id="send-button" onclick="send()"></button>
       </div>
     </div>
   </div>
@@ -68,5 +82,6 @@
     
   </script>
   <script src="{{ url_for('static', filename='scripts/connections.js') }}"></script>
+  <script src="{{ url_for('static', filename='scripts/userMedia.js') }}"></script>
   <script src="{{ url_for('static', filename='scripts/channel.js') }}"></script>
 {% endblock %}

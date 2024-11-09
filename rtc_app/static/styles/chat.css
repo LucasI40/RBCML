@@ -63,23 +63,24 @@
     width: 15%;
     box-sizing: border-box;
 
+    background-image: url('../images/send.svg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
     border: 2px solid var(--purple-deep);
-
-    background-color: var(--gray-light);
-    color: var(--purple-deep);
-
-    font-size: 1rem;
-    font-weight: 500;
 }
 
 .chat .input-area button:hover {
-    border: 2px solid var(--gray-dark);
-    
+    background-image: url('../images/send-hover.svg');
     background-color: var(--purple-vibrant);
-    color: var(--gray-dark);
     cursor: pointer;
+}
+
+.chat .input-area button:disabled {
+    background-image: url('../images/send.svg');
 }
 
 .chat .input-area button:disabled {
