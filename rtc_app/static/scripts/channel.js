@@ -10,8 +10,6 @@ class Channel {
     otherSocketId,
     policy
   ) {
-    console.log(tracks);
-
     this.channelName = channelName;
     this.connectionName = channelName.split(":")[0];
     this.channelCapability = channelCapability;
@@ -74,6 +72,34 @@ class Channel {
       });
   }
 
+  setTransceivers() {
+    // Audio transceiver
+    const sendAudio =
+      this.selfCapability.sendAudio && this.otherCapability.recvAudio;
+    const recvAudio =
+      this.selfCapability.recvAudio && this.otherCapability.sendAudio;
+    if (sendAudio && recvAudio) {
+      this.pc.addTransceiver("audio", { direction: "sendrecv" });
+    } else if (!sendAudio && recvAudio) {
+      this.pc.addTransceiver("audio", { direction: "recvonly" });
+    } else if (sendAudio && !recvAudio) {
+      this.pc.addTransceiver("audio", { direction: "sendonly" });
+    }
+
+    // Video transceiver
+    const sendVideo =
+      this.selfCapability.sendVideo && this.otherCapability.recvVideo;
+    const recvVideo =
+      this.selfCapability.recvVideo && this.otherCapability.sendVideo;
+    if (sendVideo && recvVideo) {
+      this.pc.addTransceiver("video", { direction: "sendrecv" });
+    } else if (!sendVideo && recvVideo) {
+      this.pc.addTransceiver("video", { direction: "recvonly" });
+    } else if (sendVideo && !recvVideo) {
+      this.pc.addTransceiver("video", { direction: "sendonly" });
+    }
+  }
+
   establisChannel(policy) {
     if (
       !(this.hasAudioChannel || this.hasVideoChannel || this.hasStringChannel)
@@ -96,16 +122,38 @@ class Channel {
   createOffer() {
     this.dataChannel = this.pc.createDataChannel("Channel");
 
-    this.pc.ontrack = (event) => {
-      console.log("imhere!!");
-      console.log(event);
+    this.pc.ontrack = (track) => {
+      const [stream] = track.streams;
+      const kind = track.track.kind;
+
+      if (kind === "audio") {
+        const selfCanRecv = this.selfCapability.recvAudio;
+        const otherCandSend = this.otherCapability.sendAudio;
+
+        if (selfCanRecv && otherCandSend) {
+          window.usersMedias[this.connectionName].push(
+            new Media(this.otherName, this.otherSocketId, stream, kind)
+          );
+          window.updateVideosUI();
+        }
+      } else if (kind === "video") {
+        const selfCanRecv = this.selfCapability.recvVideo;
+        const otherCandSend = this.otherCapability.sendVideo;
+
+        if (selfCanRecv && otherCandSend) {
+          window.usersMedias[this.connectionName].push(
+            new Media(this.otherName, this.otherSocketId, stream, kind)
+          );
+          window.updateVideosUI();
+        }
+      }
     };
 
     this.dataChannel.onmessage = (msg) => {
-      const selfCandRecv = this.selfCapability.recvString;
+      const selfCanRecv = this.selfCapability.recvString;
       const otherCandSend = this.otherCapability.sendString;
 
-      if (selfCandRecv && otherCandSend) {
+      if (selfCanRecv && otherCandSend) {
         window.usersMessages[this.connectionName].push(
           new Message(this.otherName, msg.data)
         );
@@ -126,6 +174,9 @@ class Channel {
       });
     };
 
+    // this.pc.addTransceiver("video", { direction: "recvonly" });
+
+    this.setTransceivers();
     this.pc.createOffer().then((offer) => {
       this.pc.setLocalDescription(offer);
       socket.emit("send_offer", {
@@ -138,26 +189,30 @@ class Channel {
 
   createAnswer(offer) {
     this.pc.ontrack = (track) => {
-      if (
-        window.usersMedias[this.connectionName][this.otherName] === undefined
-      ) {
-        window.usersMedias[this.connectionName][this.otherName] = new Media(
-          null,
-          null
-        );
-      }
+      const [stream] = track.streams;
+      const kind = track.track.kind;
 
-      if (track.track.kind === "audio") {
-        const [audioStream] = track.streams;
-        window.usersMedias[this.connectionName][this.otherName].audioStream =
-          audioStream;
-      } else if (track.track.kind === "video") {
-        const [videoStream] = track.streams;
-        window.usersMedias[this.connectionName][this.otherName].videoStream =
-          videoStream;
-      }
+      if (kind === "audio") {
+        const selfCanRecv = this.selfCapability.recvAudio;
+        const otherCandSend = this.otherCapability.sendAudio;
 
-      window.updateVideosUI();
+        if (selfCanRecv && otherCandSend) {
+          window.usersMedias[this.connectionName].push(
+            new Media(this.otherName, this.otherSocketId, stream, kind)
+          );
+          window.updateVideosUI();
+        }
+      } else if (kind === "video") {
+        const selfCanRecv = this.selfCapability.recvVideo;
+        const otherCandSend = this.otherCapability.sendVideo;
+
+        if (selfCanRecv && otherCandSend) {
+          window.usersMedias[this.connectionName].push(
+            new Media(this.otherName, this.otherSocketId, stream, kind)
+          );
+          window.updateVideosUI();
+        }
+      }
     };
 
     this.pc.onicecandidate = (e) => {
@@ -172,10 +227,10 @@ class Channel {
       this.dataChannel = e.channel;
       this.pc.dataChannel = e.channel;
       this.pc.dataChannel.onmessage = (msg) => {
-        const selfCandRecv = this.selfCapability.recvString;
+        const selfCanRecv = this.selfCapability.recvString;
         const otherCandSend = this.otherCapability.sendString;
 
-        if (selfCandRecv && otherCandSend) {
+        if (selfCanRecv && otherCandSend) {
           window.usersMessages[this.connectionName].push(
             new Message(this.otherName, msg.data)
           );
@@ -190,6 +245,7 @@ class Channel {
 
     this.pc.setRemoteDescription(offer);
 
+    this.setTransceivers();
     this.pc.createAnswer().then((answer) => {
       this.pc.setLocalDescription(answer);
     });
@@ -228,11 +284,9 @@ socket.on("setup_channel", (data) => {
 
   // Update the userInConnections object
   connection = data["connection"];
-  window.usersInConnection[connection].push({
-    userName: data["other_name"],
-    userRole: data["other_role"],
-    userId: data["other_id"],
-  });
+  window.usersInConnection[connection].push(
+    new User(data["other_name"], data["other_role"], data["other_id"])
+  );
 
   let channelName = data["connection"];
   // Proactive peer come first in channel name, making both peers agree on channelName
@@ -265,11 +319,11 @@ socket.on("release_channel", (data) => {
   });
 
   // Update the usersMedias object
-  // window.usersMedias[connection] = Object.keys(window.usersMedias[connection]).filter(
-  //   (user) => {
-  //     return user["userId"] !== data["other_id"];
-  //   }
-  // );
+  window.usersMedias[connection] = window.usersMedias[connection].filter(
+    (user) => {
+      return user["userId"] !== data["other_id"];
+    }
+  );
 
   window.updateUsersUI();
   window.updateVideosUI();

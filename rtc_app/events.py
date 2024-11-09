@@ -73,7 +73,7 @@ def get_user_role(user: str, session: str) -> str:
     if user in memoizator:
         return memoizator[user]
     
-    # return {"Alice": "Enfermeiro", "Bob": "Paciente", "Caesar": "Acompanhante", "Diana": "Técnico"}[user]
+    return {"Alice": "Enfermeiro", "Bob": "Paciente", "Caesar": "Acompanhante", "Diana": "Técnico"}[user]
     
     roles = ["Médico", "Enfermeiro", "Paciente", "Acompanhante", "Técnico"]
     memoizator[user] = roles[random.randint(0,4)]

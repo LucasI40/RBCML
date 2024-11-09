@@ -1,7 +1,7 @@
 let selectedConnection = "";
-window.usersInConnection = {}; // connectionName -> [user]
+window.usersInConnection = {}; // connectionName -> [User]
 window.usersMessages = {}; // connectionName -> [Message]
-window.usersMedias = {}; // connectionName -> sender -> Media
+window.usersMedias = {}; // connectionName -> [Media]
 window.listeners = {}; // connectionName -> [Channel]
 window.userConnectionCapabilities = {}; // connectionName -> UserCapabilities
 
@@ -36,6 +36,14 @@ class channelCapability {
   }
 }
 
+class User {
+  constructor(userName, userRole, userId) {
+    this.userName = userName;
+    this.userRole = userRole;
+    this.userId = userId;
+  }
+}
+
 class Message {
   constructor(sender, message) {
     this.sender = sender;
@@ -44,9 +52,11 @@ class Message {
 }
 
 class Media {
-  constructor(audioStream, videoStream) {
-    this.audioStream = audioStream;
-    this.videoStream = videoStream;
+  constructor(userName, userId, stream, kind) {
+    this.userName = userName;
+    this.userId = userId;
+    this.stream = stream;
+    this.kind = kind;
   }
 }
 
@@ -136,7 +146,7 @@ const initUsersMessages = (data) => {
 
 const initUsersMedias = (data) => {
   data.forEach((connectionName) => {
-    window.usersMedias[connectionName] = {};
+    window.usersMedias[connectionName] = [];
   });
 };
 
@@ -205,33 +215,45 @@ window.updateVideosUI = () => {
   const videosElem = document.getElementById("videos");
   videosElem.replaceChildren();
 
-  console.log(window.usersMedias[selectedConnection]);
+  window.usersMedias[selectedConnection].forEach((media) => {
+    const userId = media["userId"];
+    const otherName = media["userName"];
+    const stream = media["stream"];
+    const kind = media["kind"];
 
-  Object.keys(window.usersMedias[selectedConnection]).forEach((sender) => {
-    const divElem = document.createElement("div");
-    divElem.classList.add("audio-video-container");
-
-    const videoElem = document.createElement("video");
-    videoElem.classList.add("video");
-    videoElem.autoplay = true;
-    videoElem.playsInline = true;
-    videoElem.controls = false;
+    const divElem = document.getElementById(userId);
+    if (divElem !== null) {
+      divElem.getElementsByTagName(kind).srcObject = stream;
+    } else {
+      const newDivElem = document.createElement("div");
+      newDivElem.classList.add("audio-video-container");
+      newDivElem.id = userId;
   
-    console.log("imhere");
-    console.log(window.usersMedias[selectedConnection][sender].videoStream);
-    videoElem.srcObject = window.usersMedias[selectedConnection][sender].videoStream;
+      const videoElem = document.createElement("video");
+      videoElem.classList.add("video");
+      videoElem.autoplay = true;
+      videoElem.playsInline = true;
+      videoElem.controls = false;
 
-    const audioElem = document.createElement("audio");
-    audioElem.classList.add("audio");
+      const audioElem = document.createElement("audio");
+      audioElem.classList.add("audio");
+      audioElem.autoplay = true;
+  
+      const nameElem = document.createElement("h3");
+      nameElem.classList.add("peer-name");
+      nameElem.innerText = otherName;
 
-    const nameElem = document.createElement("h3");
-    nameElem.classList.add("peer-name");
-    nameElem.innerText = sender;
-
-    divElem.appendChild(videoElem);
-    divElem.appendChild(audioElem);
-    divElem.appendChild(nameElem);
-
-    videosElem.appendChild(divElem);
+      if (kind === "audio") {
+        audioElem.srcObject = stream;
+      } else if (kind === "video") {
+        videoElem.srcObject = stream;
+      }
+  
+      newDivElem.appendChild(videoElem);
+      newDivElem.appendChild(audioElem);
+      newDivElem.appendChild(nameElem);
+  
+      videosElem.appendChild(newDivElem);
+    }
   });
 }

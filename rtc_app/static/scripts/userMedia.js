@@ -42,7 +42,6 @@ class Tracks {
             setTimeout(verifier, 1000);
           } else if (this.audio === "not allowed") {
             resolve("User camera allowed");
-            resolve(this.streams, null, this.video);
           } else if (this.video === "not allowed") {
             resolve("User microphone allowed");
           } else {
@@ -69,7 +68,7 @@ class Tracks {
         } else {
           // !neededDevices.camera && !neededDevices.microphone
           // Neither camera or microphone are needed
-          resolve("");
+          resolve("No device needed");
         }
       };
 
