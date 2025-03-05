@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, request
 
-from .events import get_user_role
+from .events import get_user_role, set_role
 
 
 main = Blueprint('main', __name__)
@@ -30,3 +30,22 @@ def view_user(user):
 def view_session(user, session):
     role = get_user_role(user, session)
     return render_template('session.html', user=user, session=session, role=role)
+
+@main.route('/createRole', methods=['GET', 'POST'])
+def view_create_role():
+    if request.method == 'GET':
+        return render_template('createRole.hmtl')
+    else:
+        role = request.form
+        sV = 'sendVideo' in role
+        rV = 'receiveVideo' in role
+        sA = 'sendAudio' in role
+        rA = 'receiveAudio' in role
+        sS = 'sendString' in role
+        rS = 'receiveString' in role
+        capability = (sV, rV, sA, rA, sS, rS)
+
+        if set_role(role.get('name'), capability):
+           return "Role created successfully"
+        else:
+           return "Role not created"
