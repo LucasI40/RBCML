@@ -1,3 +1,4 @@
+import csv
 import random
 
 from flask import request
@@ -41,7 +42,7 @@ def join(data):
     for connection in connections:
         capabilities[connection] = model.role_capability(role, connection)
     socketio.emit('setup_user_capabilities', capabilities, to=peer.sid)
-    
+
     for connection in connections:
         if connection not in connectors.keys():
             connector = Connector(connection, model)
@@ -68,13 +69,7 @@ def sdp(data):
     sdp = data['sdp']
     socketio.emit('SDP', {"sdp": sdp, 'channel_name': channel_name}, to=to)
 
-memoizator = dict()
 def get_user_role(user: str, session: str) -> str:
-    if user in memoizator:
-        return memoizator[user]
-    
-    return {"Alice": "Enfermeiro", "Bob": "Paciente", "Caesar": "Acompanhante", "Diana": "Técnico"}[user]
-    
-    roles = ["Médico", "Enfermeiro", "Paciente", "Acompanhante", "Técnico"]
-    memoizator[user] = roles[random.randint(0,4)]
-    return memoizator[user]
+    roleName = user
+    return roleName
+
