@@ -10,26 +10,23 @@ class RBCMLModel:
     def channel_capability(self, connection: str):
         # Return the channel capability for the given connection in the model
         return ChannelCapability(False, False, True, False)
-    
+
+    def get_role_capabilities(roleName):
+        with open('roles.csv', 'r') as roles:
+            reader = csv.reader(roles, delimiter=';')
+
+            capabilitiesString = ""
+            for data in reader:
+                if data[0] == roleName:
+                    capabilitiesString = data[1][1:-1]
+                    break
+            capabilitiesString = capabilitiesString.split(", ")
+            capabilities = tuple(cap == 'True' for cap in capabilitiesString) + (False, False)
+            return capabilities
+
     def role_capability(self, role: str, connection: str):
-        if role =="Enfermeiro":
-            # Can send and receive
-            return RoleCapability(True, True, False, False, True, True, False, False)
-
-        if role == "Paciente":
-            # Can send but can't receive
-            return RoleCapability(True, False, False, False, True, False, False, False)
-
-        if role == "Acompanhante":
-            # Can't send but can receive
-            return RoleCapability(False, True, False, False, False, True, False, False)
-        
-        if role == "Técnico":
-            # Can't send and receive
-            return RoleCapability(False, False, False, False, False, False, False, False)
-
-        # Return the role capability for the given connetion in the model
-        return RoleCapability(True, True, False, False, True, True, False, False)
+        cap = RBCMLModel.get_role_capabilities(role)
+        return RoleCapability(cap[0], cap[1], cap[2], cap[3], cap[4], cap[5], cap[6], cap[7])
     
     def get_connections(self, role: str) -> list[str]:
         connections = ["Conversa Particular", "Triagem", "Exame", "Consulta", "Diagnóstico"]
