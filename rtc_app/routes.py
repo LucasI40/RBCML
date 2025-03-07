@@ -19,14 +19,17 @@ def view_login():
     if request.method == 'GET':
         return render_template('login.html', roles=RBCMLModel.get_role_names())
     else:
-        role = request.form['option']
-        username = request.form.get('username')
-        return redirect(f'/user/{username}/role/{role}/session/1')
+        role = request.form.get('option')
+        return redirect(f'/user/{role}')
 
-@main.route('/user/<username>/role/<choosedRole>/session/<session>')
-def view_session(username, choosedRole, session):
-    role = get_user_role(choosedRole, session)
-    return render_template('session.html', user=username, session=session, role=role)
+@main.route('/user/<user>')
+def view_user(user):
+    return render_template('user.html', user=user)
+
+@main.route('/user/<user>/session/<session>')
+def view_session(user, session):
+    role = get_user_role(user, session)
+    return render_template('session.html', user=user, session=session, role=role)
 
 @main.route('/createRole', methods=['GET', 'POST'])
 def view_create_role():
