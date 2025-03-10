@@ -22,6 +22,11 @@ source environment/bin/activate
 cd RBCML/
 ```
 
+### Install dependencies
+```bash
+pip install -r requirements.txt
+```
+
 ### Run
 ```bash
 python3 run.py
