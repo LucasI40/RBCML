@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>HomeRBCML</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='styles/cadastro.css') }}">
+   </head>
+   <body>
+            <div class="cadastro-container">
+                    <div class="Lside">
+                        <h1>RBCML</h1>
+                    </div>
+                    <div class="Rside">
+                        <div class="username">
+                            <p>Username</p>
+                        </div>
+                        <div class="password">
+                                <p>Password</p>    
+                        </div>
+                        <div class="singup-container">
+                            <div class="singup">    
+                                <button class="singup-button">
+                                    <p>Cadastrar</p>
+                                </button>
+                            </div>
+                            <div class="register">
+                                <button class="login-button">
+                                    <p>Registrar</p>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            <script src="{{ url_for('static', filename='scripts/cadastro.js') }}"></script>
+    </body>
+</html>

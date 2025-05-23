@@ -6,13 +6,30 @@ from .events import get_user_role
 main = Blueprint('main', __name__)
 
 
+
 @main.route('/ping')
 def view_ping():
     return 'pong'
 
 @main.route('/')
 def view_index():
-    return redirect('/login')
+    return redirect('/home')
+
+@main.route('/home')
+def view_home(): 
+    return render_template('home.html')
+
+@main.route('/cadastro')
+def view_cadastro():
+    return render_template('cadastro.html')
+
+@main.route('/sessionsPage')
+def view_sessionsPage():
+    return render_template('sessionsPage.html')
+
+@main.route('/createcall')
+def view_createcall():
+    return render_template('createcall.html')
 
 @main.route('/login', methods=['GET', 'POST'])
 def view_login():

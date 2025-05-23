@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>HomeRBCML</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='styles/sessionsPage.css') }}">
+   </head>
+   <body>
+      <header class="nav-bar"> 
+         <div class ="nav-bar-container">
+             <div class="nav-bar-logo">
+               <a href="/home">
+                  <h1 class="logo">RBCML</h1>       
+               </a>
+           </div>
+           <div class="nav-bar-sessionPage">
+               <a href="/sessionsPage">
+               <h1 class = "Pages">Comunidade</h1>    
+               </a> 
+           </div>
+            <div class="nav-bar-login">
+                     <a href="/cadastro">
+                     <h1 class = "login">Login</h1>    
+                     </a> 
+           </div>
+           </div>
+    </header>
+    <section class="sessions-container">
+       <form action="" method="">
+          <div class="list-sessions-container">
+
+            <div class="list-sessions-button">
+            <button class="layout-mais-recente">
+              <h1 class="button-text">Mais Recentes</h1>
+            </button>
+            <button class="layout-with-pemissions">  
+              <h1 class="button-text">Com Permissões</h1>
+            </button>
+            </div>
+
+            <div class="section-active-container">
+               <div class="section-active">
+                  <h1 class="sections">Sessões</h1>
+               </div>
+               <div class="section-active">
+                  <h1 class="sections">Sessões</h1>
+               </div>
+               <div class="section-active">
+                  <h1 class="sections">Sessões</h1>
+               </div>
+            </div>
+            
+          </div>
+       </form>
+    </section>
+
+    </body>
+</html>

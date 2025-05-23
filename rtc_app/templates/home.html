@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<html>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>HomeRBCML</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='styles/home.css') }}">
+   </head>
+   <body>
+      <header class="nav-bar"> 
+          <div class ="nav-bar-container">
+              <div class="nav-bar-logo">
+                   <h1>RBCML</h1>       
+            </div>
+            <div class="nav-bar-sessionPage">
+                <a href="/sessionsPage">
+                <h1 class = "Pages">Comunidade</h1>    
+                </a> 
+            </div>
+             <div class="nav-bar-login">
+                      <a href="/cadastro">
+                      <h1 class = "login">Login</h1>    
+                      </a> 
+            </div>
+            </div>
+     </header>
+     <section class="home container" id="home">
+            <div class="center">
+                  <div class="set">
+                        <button class="layouts" onclick="changeLayout()">
+                              <img src="{{ url_for('static', filename='images/sala-aula.jpg') }}" alt="sala-aula">
+                        </button>
+                        <button class="layouts" onclick="" >
+                              <img src="{{ url_for('static', filename='images/corte.jpg') }}" alt="sala-aula">
+                        </button>
+                        <button class="layouts" onclick="" >
+                              <img src="{{ url_for('static', filename='images/auditorio.webp') }}" alt="sala-aula">
+                        </button>
+                        <button class="layouts" onclick=""></button>
+                        <button class="layouts" onclick=""></button>
+                  </div>   
+                  <div> 
+                        <!--<form action="create-session.html" method="post"> </form>-->
+                       <button class="create-session">
+                        <a href="/createcall">
+                              <h1>Criar Sessão</h1>
+                        </a>
+                       </button>
+                  </div>
+            </div>
+      </section>  
+      <script src="{{ url_for('static', filename='scripts/home.js') }}"></script>    
+    </body>
+</html>
