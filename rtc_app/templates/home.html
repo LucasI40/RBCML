@@ -28,20 +28,22 @@
      <section class="home container" id="home">
             <div class="center">
                   <div class="set">
-                        <button class="layouts" onclick="changeLayout()">
+                        <button class="layouts" onclick="changeLayout('1')">
                               <img src="{{ url_for('static', filename='images/sala-aula.jpg') }}" alt="sala-aula">
                         </button>
-                        <button class="layouts" onclick="" >
+                        <button class="layouts" onclick="changeLayout('2')" >
                               <img src="{{ url_for('static', filename='images/corte.jpg') }}" alt="sala-aula">
                         </button>
-                        <button class="layouts" onclick="" >
+                        <button class="layouts" onclick="changeLayout('3')" >
                               <img src="{{ url_for('static', filename='images/auditorio.webp') }}" alt="sala-aula">
                         </button>
                         <button class="layouts" onclick=""></button>
                         <button class="layouts" onclick=""></button>
                   </div>   
-                  <div> 
-                        <!--<form action="create-session.html" method="post"> </form>-->
+                  <div class="create-session-container">     <!--<form action="create-session.html" method="post"> </form>-->
+                        <div class="change-layout">
+                              <p class="teste">laera</p>
+                        </div>
                        <button class="create-session">
                         <a href="/createcall">
                               <h1>Criar Sessão</h1>

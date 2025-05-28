@@ -34,12 +34,32 @@ p{
     justify-content: center;
     align-items: center;
 }
+input{
+    width: 80%;
+    background-color:  #87f38d;
+    border-radius: 15px;
+    display: flex;
+    justify-content: baseline;
+    align-items: baseline;
+}
 .username{
-    width: 45%;
+    width: 55%;
     margin-bottom: 10px;
     display: flex;
     justify-content: baseline;
     align-items: baseline;
+    border-radius: 15px;
+    margin-right: 0px;
+
+}
+.tag{
+    width: 100%;
+    margin-bottom: 10px;
+    margin-left: 5px;
+    display: flex;
+    justify-content: baseline;
+    align-items: baseline;
+    border-radius: 15px;
 }
 .password{
     width: 45%;
@@ -47,6 +67,8 @@ p{
     display: flex;
     justify-content: baseline;
     align-items: baseline;
+    border-radius: 15px;
+    margin-right: 55px;
 }   
 .singup-container{
     display: flex;

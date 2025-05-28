@@ -8,7 +8,7 @@
       <link rel="stylesheet" href="{{ url_for('static', filename='styles/createcall.css') }}">
    </head>
    <body>
-      <header class="nav-bar"> 
+    <header class="nav-bar"> 
          <div class ="nav-bar-container">
              <div class="nav-bar-logo">
                 <a href="/home">
@@ -27,10 +27,18 @@
            </div>
            </div>
     </header>
-    <section class="UserTypes-container">
-      <form action="" method="">
-        <div class="UserType">
-            <h1>Criar Sala</h1>
+    <section class="Role-container">
+      <form action="" method="POST">
+        <div class="RoleType">
+            <div class="Role-name">
+                <h2>"Role"</h2>
+            </div>
+            <div class="email-input-container">
+                <input type="email" name="email" placeholder="Digite o email" required>
+                <button type="submit" class="circular-button">
+                    <span>→</span>
+                </button>
+            </div>
         </div>
       </form>
     </section>
