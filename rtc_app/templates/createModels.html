@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>HomeRBCML</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='styles/createModels.css') }}">
+   </head>
+   <body>
+    <header class="nav-bar"> 
+         <div class ="nav-bar-container">
+             <div class="nav-bar-logo">
+                <a href="/home">
+                  <h1>RBCML</h1>       
+                </a>
+           </div>
+           <div class="nav-bar-sessionPage">
+               <a href="/sessionsPage">
+               <h1 class = "Pages">Comunidade</h1>    
+               </a> 
+           </div>
+            <div class="nav-bar-login">
+                     <a href="/cadastro">
+                     <h1 class = "login">Login</h1>    
+                     </a> 
+           </div>
+           </div>
+    </header>
+    <section class="Role-container">
+      <form action="/createModel" method="POST" enctype="multipart/form-data">
+        <div class="Model-container">
+            <div class="Model-name">
+                <label for="name">Model name:</label><br>
+                <input type="text" id="name" name="name" pattern="[a-zA-Z _.@]+" maxlength="64" required><br><br>
+            </div>
+            <div class="Model-Description">
+                <label for="description">Description:</label><br>
+                <input type="text" id="description" name="description" pattern="[a-zA-Z0-9 _.@]+" maxlength="256" required><br><br>
+        
+            </div>
+            <div class="Model-json">
+                <label for="jsonFile">Insira o modelo:</label><br>
+                <input type="file" id="jsonModel" name="jsonModel" accept=".json" required><br><br>
+            </div>
+             <div>
+                <input type="submit" value="Submit">
+            </div>
+        </div>
+      </form>
+    </section>
+    </body>
+</html>

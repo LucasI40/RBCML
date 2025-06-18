@@ -5,10 +5,10 @@
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>HomeRBCML</title>
-      <link rel="stylesheet" href="{{ url_for('static', filename='styles/cadastro.css') }}">
+      <link rel="stylesheet" href="{{ url_for('static', filename='styles/newlogin.css') }}">
    </head>
    <body>
-        <form action="/singup" method="post">
+        <form action="/temporary_login" method="post">
             <div class="cadastro-container">
                     <div class="Lside">
                         <a href="/home">
@@ -16,12 +16,6 @@
                         </a>
                     </div>
                     <div class="Rside">
-                        <div class="username">
-                            <input type="text" placeholder="Username"pattern="[a-zA-Z _.@]+" maxlength="64" required>
-                            <div class="tag">
-                                <input type="text" placeholder="#Tag" pattern="[a-zA-Z _.@]+" maxlength="20" required >
-                            </div>
-                        </div>
                         <div class="email">
                             <input type="email" placeholder="Email" maxlength="254" required>    
                         </div>
@@ -29,12 +23,7 @@
                             <input type="password" placeholder="Password" pattern="[a-zA-Z _.@]+" maxlength="128" required>    
                         </div>
                         <div class="singup-container">
-                            <div class="singup">    
-                                <button class="singup-button">
-                                    <p>Sing up</p>
-                                </button>
-                            </div>
-                            <div class="register">
+                            <div class="login">    
                                 <button class="login-button">
                                     <p>Login</p>
                                 </button>

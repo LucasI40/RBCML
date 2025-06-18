@@ -42,6 +42,20 @@ a{
     align-items: center;
     justify-content: space-between;    
 }
+.nav-bar-models {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    width: 100%;
+}
+.Models{
+    margin-right: 0;
+    cursor: pointer;
+    color: #000000;
+}
+.Models:hover{
+    text-decoration: underline;
+}
 .nav-bar-sessionPage {
     display: flex;
     align-items: center;
@@ -101,7 +115,6 @@ a{
     border-radius: 60px;
     height: 115px;
 }
-
 .create-session{
     margin-top: 35rem;
     margin-right: 45rem;
